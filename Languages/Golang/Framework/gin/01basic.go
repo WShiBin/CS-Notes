@@ -27,7 +27,7 @@ func main() {
 		if val, ok := db[name]; ok {
 			ctx.JSON(http.StatusOK, gin.H{
 				"name":  name,
-				"valus": val,
+				"value": val,
 			})
 		} else {
 			ctx.JSON(http.StatusOK, gin.H{
