@@ -57,7 +57,7 @@ zkServer.sh {start|start-foreground|stop|restart|status|upgrade|print-cmd}
 
 ### Client 启动
 
-```
+```shell
 zkServer.sh –server hostname:port
 ```
 
@@ -159,7 +159,7 @@ ZooKeeper -server host:port cmd args
 - 临时目录节点（EPHEMERAL）客户端与zookeeper断开连接后，该节点被删除
 - 临时顺序编号目录节点（EPHEMERAL_SEQUENTIAL）客户端与zookeeper断开连接后，该节点被删除，只是Zookeeper给该节点名称进行顺序编号
 
-![image-20190311164338539](/Users/Ben/Desktop/Zookeeper.assets/image-20190311164338539.png)
+![image-20190311164338539](Zookeeper.assets/image-20190311164338539.png)
 
 创建znode时设置顺序标识，znode名称后会附加一个值，顺序号是一个单调递增的计数器，由父节点维护
 
@@ -277,6 +277,32 @@ bin/zkServer.sh start
 ```shell
 bin/zkServer.sh status
 ```
+
+zk.sh
+
+```shell
+#!/bin/bash
+
+case $1 in
+"start") {
+    for i in hadoop102 hadoop103 hadoop104; do
+        ssh $i "/opt/module/zookeeper-3.4.10/bin/zkServer.sh start"
+    done
+} ;;
+"stop") {
+    for i in hadoop102 hadoop103 hadoop104; do
+        ssh $i "/opt/module/zookeeper-3.4.10/bin/zkServer.sh stop"
+    done
+} ;;
+"status") {
+    for i in hadoop102 hadoop103 hadoop104; do
+        ssh $i "/opt/module/zookeeper-3.4.10/bin/zkServer.sh status"
+    done
+} ;;
+esac
+```
+
+
 
 #### 选举机制
 
@@ -420,7 +446,7 @@ log4j.appender.logfile.layout.ConversionPattern=%d %p [%c] - %m%n
 
 
 
-![img](/Users/Ben/Desktop/Zookeeper.assets/wpstEkK7f.png)
+![img](Zookeeper.assets/wpstEkK7f.png)
 
 #### 现在集群上创建/servers节点
 
