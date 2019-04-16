@@ -1,5 +1,7 @@
 ## Hive Architecture
 
+![image-20190412224301691](Hive.assets/image-20190412224301691.png)
+
 ## Hive计算引擎
 
 MR.Tez,Spark
@@ -69,10 +71,10 @@ MR.Tez,Spark
 ### cli连接: hive
 
 ```shell
-hive -f ~/test.hql
+hive -f ~/test.hql # 执行脚本中sql语句
 hive -i ~/test.hql
-source ~/test.hql
-hive -e "select * from student"
+hive> source ~/test.hql
+hive -e "select * from student" # 不进入hive的交互窗口执行sql语句
 hive -S <-e/-f> "select * from student"  
 hive --define var=xxx
 hive --hiveconf var=xxx
@@ -95,7 +97,8 @@ dfs -ls /l
 ```shell
 set hiveconf:hive.cli.print.current.db=true;
 set hiveconf:hive.exec.mode.local.auto=true;
-set hive.metastore.warehouse.dir=/hive; 路径
+set hive.metastore.warehouse.dir=/hive; # 路径
+set mapred.reduce.tasks=100;
 ```
 
 
@@ -884,7 +887,7 @@ hive (gmall)> create temporary function flat_analizer as 'com.ishibin.udtf.Event
 
 
 
-## 自定义UDF函数(一对多)
+### 自定义UDF函数(一对多)
 
 - 编写代码
   - 继承GenericUDTF

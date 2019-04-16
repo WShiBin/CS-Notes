@@ -1,3 +1,5 @@
+[TOC]
+
 ## 介绍
 
 > Vim is **a highly configurable text editor** for efficiently creating and changing any kind of text. It is included as "vi" with most UNIX systems and with Apple OS X.
@@ -18,9 +20,14 @@ Github:[https://github.com/vim/vim](https://github.com/vim/vim)
 推荐的 vimrc 配置:[https://github.com/amix/vimrc](https://github.com/amix/vimrc)
 
 
+
 ## 学习曲线
 
 ![image-20190403222424666](Vim.assets/image-20190403222424666.png)
+
+
+## Vim Cheat Sheet
+
 ![image-20190403231709039](Vim.assets/image-20190403231709039.png)
 
 
