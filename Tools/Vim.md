@@ -60,25 +60,26 @@ Github:[https://github.com/vim/vim](https://github.com/vim/vim)
 ## 光标移动 Move
 
 * hjkl
-* e/E end
-* b/B back
+* e/E —>[word] end
+* b/B —>back
 * 0
 * $/^
 * gg/G
 * 10G/10gg
 * 10%
-* H/M/L
+* H/M/L —> high/middle/low
 * %
-* Ctrl + ]
+* Ctrl + ] / Ctrl + O —> Out
 
 
 
 ## 对象 Object
 
-* w
-* "
-* }
-* ]
+* w —> Word
+* s —> Sentence
+* " —> "balabala"
+* } —> { some code }
+* ] —> [ some code ]
 
 
 
@@ -113,8 +114,7 @@ Github:[https://github.com/vim/vim](https://github.com/vim/vim)
 * /
 * ?
 * n/N
-* `#`
-* `*`
+* `#/*`
 * f/t
 * F/T
 * ;
@@ -129,7 +129,7 @@ Github:[https://github.com/vim/vim](https://github.com/vim/vim)
 * Ctrl+U(insert mode)
 * :set relativenumber
 * :set norelativenumber
-* :set so=8
+* :set scrolloff=8
 * :!ps -ef
 * gd: goto define
 
@@ -161,7 +161,7 @@ Github:[https://github.com/vim/vim](https://github.com/vim/vim)
 
 * :vs file_name
 * :vsplit file_name
-* :​vertical split file_name
+* :vertical split file_name
 * :sp file_name
 * :splite file_name
 
