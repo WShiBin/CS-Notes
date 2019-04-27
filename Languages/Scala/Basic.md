@@ -628,9 +628,62 @@ object ImportDemo {
 
 
 
-## 隐式转换,隐式值,隐式类
+### 类型转换
 
-### 隐式转换
+```scala
+object ConvertDemo {
+
+  def main(args: Array[String]): Unit = {
+    var obj: Any = 123
+    if (obj.isInstanceOf[Int]) {
+      val i: Int = obj.asInstanceOf[Int]
+      println(i)
+    }
+  }
+}
+```
+
+
+
+### 自身类型Self type
+
+主要是为了解决特质的循环依赖问题，同时可以确保特质在不扩展某个类的情况下，依然可以做到限制混入该特质的类的类型	
+
+```scala
+// 类似 Logger extends Exception
+trait Logger {
+  // 自身类型
+  this: Exception =>
+  def log(): Unit = {
+    println(getMessage)  // 调用 Exception里面的 getMessage
+  }
+}
+
+// 同时要求继承 Logger的子类必须继承 Exception
+class Console extends Exception with Logger {}
+```
+
+
+
+## 隐式转换
+
+- 隐式参数
+- 隐式值
+- 隐式类
+
+### 什么时候会发生隐式转换
+
+* 当⽅法中的参数的类型与⽬标类型不⼀致时
+* 当对象调⽤所在类中不存在的⽅法或成员时，编译器会⾃动将对象进⾏隐式转换（根据类型）
+
+### 隐式转换时机
+
+* ⾸先会在当前代码作⽤域下查找隐式实体（隐式⽅法、隐式类、隐式对象）
+* 如果第⼀条规则查找隐式实体失败，会继续在隐式参数的类型的作⽤域⾥查找。类型的作⽤域是 指与该类型相关联的全部伴⽣模块，⼀个隐式实体的类型T它的查找范围如下(第⼆种情况范围⼴ 且复杂在使⽤时，应当尽量避免出现)：
+  * 如果T被定义为T with A with B with C,那么A,B,C都是T的部分，在T的隐式解析过程中，它们 的伴⽣对象都会被搜索
+  * 如果T是参数化类型，那么类型参数和与类型参数相关联的部分都算作T的部分，⽐如 List[String]的隐式搜索会搜索List的伴⽣对象和String的伴⽣对象
+
+### 隐式函数
 
 > 隐式转换与函数名称无关，只与函数签名（函数参数类 型和返回值类型）有关
 
@@ -641,6 +694,7 @@ object Demo02 {
       d.toInt
     }
 
+    // 3.5会去找一个参数为 Double 的隐式函数,且正好返回值是 Int 类型
     val num: Int = 3.5
     println("num =" + num)
   }
@@ -686,7 +740,9 @@ object Demo03 {
 
     val mysql = new MySQL
     mysql.insert()
+    // 会去找隐式函数参数为 mysql 类型,且返回值正好有 delete 函数
     mysql.delete() // 编译器工作 分析 addDelete$1(mySQL).delete()
+    // 同上
     mysql.update()
   }
 }
@@ -698,7 +754,6 @@ class MySQL {
 }
 
 class DB {
-
   def delete(): Unit = {
     println("delete")
   }
@@ -709,6 +764,52 @@ class DB {
 }
 ```
 
+**拓展 File 功能,加 read**
+
+```scala
+object Demo01 {
+  def main(args: Array[String]): Unit = {
+    implicit def hehe(file: File) = new RichFile(file)
+
+    new File("../obj/Demo04").read()
+  }
+
+  class RichFile(file: File) {
+    def read(): Unit = {
+      Source.fromFile(file.getPath).mkString
+    }
+  }
+}
+```
+
+**实现2 days ago / 2 days later**
+
+```scala
+object Demo02 {
+  def main(args: Array[String]): Unit = {
+    //implicit def hehe(i: Int) = new DateHelper(i)
+    // 2 days later
+    println(2.days("later"))
+    println(10.days("ago"))
+  }
+
+  implicit class DateHelper(i: Int) {
+    def days(flag: String) = {
+      val now: LocalDate = LocalDate.now
+      if (flag == "ago") {
+        now.minusDays(i).toString
+      } else if (flag == "later") {
+        now.plusDays(i).toString
+      } else {
+        now.toString
+      }
+    }
+  }
+}
+```
+
+
+
 ### 隐式值
 
 > 隐式值也叫隐式变量，将某个形参变量标记为 implicit， 所以编译器会在方法省略隐式参数的情况 下去搜索作用域内的隐式值作为缺省参数
@@ -718,6 +819,7 @@ object Demo04 {
   def main(args: Array[String]): Unit = {
     implicit var str: String = "hello world"
 
+    // 会去找一个类型为 String 的隐式值
     def fun(implicit str: String) = {
       println(str)  // hello world
     }
@@ -749,3 +851,793 @@ object Demo05 {
 ```
 
 ### 隐式类
+
+隐式类是隐式函数的转换
+
+* 其所带的构造参数有且只能有⼀个
+* 隐式类必须被定义在“类”或“伴⽣对象”或“包对象”⾥，即隐式类不能是顶级的( objects )。
+* 隐式类不能是 case class 样例类（case class在后续介绍）
+* 作⽤域内不能有与之相同名称的标示符
+
+```scala
+object Demo01 {
+  def main(args: Array[String]): Unit = {
+    // implicit def hehe(file: File) = new RichFile(file)
+
+    new File("../obj/Demo04").read()
+  }
+ 
+  implicit class RichFile(file: File) {
+    def read(): Unit = {
+      Source.fromFile(file.getPath).mkString
+    }
+  }
+}
+```
+
+```scala
+object Demo02 {
+  def main(args: Array[String]): Unit = {
+    //implicit def hehe(i: Int) = new DateHelper(i)
+    // 2 days later
+    println(2.days("later"))
+    println(10.days("ago"))
+  }
+
+  implicit class DateHelper(i: Int) {
+    def days(flag: String) = {
+      val now: LocalDate = LocalDate.now
+      if (flag == "ago") {
+        now.minusDays(i).toString
+      } else if (flag == "later") {
+        now.plusDays(i).toString
+      } else {
+        now.toString
+      }
+    }
+  }
+}
+```
+
+
+
+## 集合
+
+### Overview
+
+官⽅⽂档: https://docs.scala-lang.org/overviews/collections/overview.html
+
+Scala 同时⽀持不可变集合和可变集合，不可变集合可以安全的并发访问
+
+1. 可变集合： scala.collection.mutable
+2. 不可变集合： scala.collection.immutable
+
+#### ⾼层次的包
+
+![image-20190417201436101](Basic.assets/image-20190417201436101.png)
+
+### 数组
+
+#### 定长数组
+
+```scala
+object Demo01 {
+
+  def main(args: Array[String]): Unit = {
+    //var arr1 = new Array[Int](1, 2, 3, 4, 5, 6)
+    // 类型为 Int,长度为10的数组
+    var arr1 = new Array[Int](10);
+    var arr2 = (1, 2, 3, 4, 5, 6)
+
+    var arr = Array(10, 21, 32, 4, 15, 46, 17)
+    arr(0) = 100
+    println(arr(0))
+
+    arr.update(2, 200)
+    println(arr.size)
+    println(arr.length)
+    println(arr.mkString("")) // 转成 string
+
+    println("-------------------")
+    for (elem <- arr) {
+      println(elem)
+    }
+    
+    println(arr.max)
+    println(arr.min)
+    println(arr.sum)
+    println(arr.sorted)
+
+    println("-------------")
+    arr.sorted.foreach(println)
+  }
+}
+```
+
+
+
+#### 变长数组ArrayBuffer
+
+```scala
+object Demo02ArrayBuffer {
+
+  def main(args: Array[String]): Unit = {
+    val arrayBuffer = new ArrayBuffer[Int]()
+    arrayBuffer.+=(10)
+    arrayBuffer.+=(20)
+    arrayBuffer.+=(30)
+    arrayBuffer.+=(50, 60, 70, 80)
+    arrayBuffer += (50, 60, 70, 80)
+    arrayBuffer.++=(Array(100, 200, 300))
+    arrayBuffer ++= Array(100, 200, 300)
+    println(arrayBuffer)
+    println("-------------------")
+
+    arrayBuffer.-=(10)
+    println(arrayBuffer)
+    println("-------------------")
+
+    println(arrayBuffer.size)
+    //println(arrayBuffer.clear())
+    println(arrayBuffer.insert(0, 1))
+    arrayBuffer.remove(7)
+    arrayBuffer.insertAll(3, Array(1, 2, 3))
+    arrayBuffer.trimEnd(2)
+    arrayBuffer.trimStart(3)
+    println(arrayBuffer)
+    
+    println("-----------------------")
+    // 元素遍历
+    for (elem <- arrayBuffer) {
+      println(elem)
+    }
+    println("-----------------------")
+    // 索引遍历
+    //for (i <- 0 until arrayBuffer.length){
+    for (i <- arrayBuffer.indices) {
+      println(arrayBuffer(i))
+    }
+    // 索引反转遍历
+    for (i <- arrayBuffer.indices.reverse) {
+      println(arrayBuffer(i))
+    }
+  }
+}
+```
+
+
+
+#### 多维数组
+
+````scala
+object Demo04ArrayMut {
+
+  def main(args: Array[String]): Unit = {
+    // 规则数组
+    val arr: Array[Array[Int]] = Array.ofDim[Int](2, 3)
+    arr(0)(0) = 100
+    println(arr(0)(0))
+
+    // 不规则多维数组
+    var arr1: Array[Array[Int]] = new Array[Array[Int]](3)
+    for (i <- arr1.indices) {
+      arr1(i) = new Array[Int](i + 5)
+    }
+    // 遍历
+    for (i <- arr1.indices) {
+      for (j <- arr1(i).indices){
+        println(arr1(i)(j))
+      }
+    }
+    // 遍历
+    arr1.foreach(arr=> arr.foreach(println))
+    arr1.foreach(_.foreach(println))
+  }
+}
+````
+
+
+
+#### 可变和不可变共同拥有的
+
+```
+++ 连接两个数组
+++: 连接两个数组
+:+ ⼀个数组连接⼀个元素
++: ⼀个数组连接⼀个元素 
+/: 左折叠 
+:\ 右折叠 
+head 第⼀个元素(重要) 
+tail 除第⼀个元素为其他元素组成的数组(重要) 
+last 最后⼀个元素
+max 找到最⼤值 
+min 找到最⼩值
+```
+
+#### 可变数组拥有的
+
+````
+++= 添加数组的元素到原来的数组中
+++=: 
++= 添加元素到数组中
++=: 
+- 返回新的去掉指定元素的数组
+-- 返回新的元素
+-= 修改原数组. 去掉第⼀次指定出现的元素
+--=
+````
+
+
+
+### 元组Tuple
+
+存放各种相同或不同类型的数据。 说的简单点，就是将多个⽆关 的数据封装为⼀个整体，称为元组.
+
+```scala
+object Demo01 {
+  def main(args: Array[String]): Unit = {
+    // 两种类型的写法: 推荐第⼀种
+    val t = Tuple4(1, 2, 3, 4)
+    val t1: (String, Int, String, Boolean) = ("a", 1, "2", true)
+    val t2: Tuple4[String, Int, String, Boolean] = ("a", 1, "2", true)
+    println(t1)
+    println(t2)
+
+    println(t1._1, t1._2, t1._3, t1._4)
+    println(t1.productElement(1))
+    println(t1 productElement 1)
+
+    println("-------------------¬")
+    for (elem <- t1.productIterator) {
+      println(elem)
+    }
+  }
+}
+```
+
+
+
+### 列表 List
+
+```scala
+object Demo01 {
+  def main(args: Array[String]): Unit = {
+    val list = List(1, 2, 3, 4, 5)
+    val list2: List[Int] = 1 :: 2 :: 3 :: 4 :: Nil
+
+    val list3: List[Int] = list :+ 10 :+ 20
+    val list4: List[Int] = 100 +: 200 +: list
+    println(list3)
+    println(list4)
+
+    val list5: List[Int] = list ++ list2
+    val list6: List[Int] = list ::: list2
+    println(list5)
+    println(list6)
+  }
+}
+```
+
+
+
+### 队列 Queue
+
+先进先出
+
+```scala
+object Demo01 {
+
+  def main(args: Array[String]): Unit = {
+    //val queue: mutable.Queue[Int] = mutable.Queue(1,2,3,4,5,6)
+    val queue: mutable.Queue[Int] = new mutable.Queue[Int]
+    queue.enqueue(1, 2, 3, 4, 5, 6)
+
+    println(queue.sum)
+    println(queue.min)
+    println(queue.max)
+    println(queue.size)
+    println(queue.tail)
+    println(queue.head)
+    //println(queue.)
+    for (i <- 0 until queue.size) {
+      queue.dequeue()
+    }
+    queue.dequeueFirst(_ % 2 == 0)
+    queue.dequeueAll(_ % 2 == 0)
+    //queue.foreach(println)
+  }
+}
+```
+
+
+
+### 映射Map
+
+```scala
+object Demo01 {
+
+  def main(args: Array[String]): Unit = {
+    // 可变 map
+    val map = mutable.Map[String, Int](("a", 1), ("b", 2), ("c", 3))
+    val map2 = inmutable.Map("a" -> 1, "b" -> 2, "c" -> 3)
+
+    map("d") = 4
+    map += ("e" -> 5, "f" -> 6)
+    map.remove("e")
+    map -= ("f")
+    //map.clear()
+    println(map("a"))
+    println(map.size)
+    //println(map("x"))
+
+    // 不存在就返回一个默认值
+    println(map.getOrElse("x", 100))
+
+    // 查看是否存在
+    if (map.contains("x")) {
+      println("contains")
+    } else {
+      println("not contains")
+    }
+
+    // 查看是否存在
+    val option: Option[Int] = map.get("x")
+    if (!option.isEmpty) {
+      println(option.get)
+    } else {
+      println("empty")
+    }
+
+    // 遍历
+    println("----------element-----------")
+    for (elem <- map) {
+      println(elem._1, elem._2)
+    }
+
+    println("----------k-v-----------")
+    for ((k, v) <- map) {
+      println(k, v)
+    }
+
+    println("----------keys-----------")
+    for (key <- map.keys) {
+      println(key, map(key))
+    }
+
+    println("----------values-----------")
+    for (values <- map.values) {
+      println(values)
+    }
+
+    println("----------keyset-----------")
+    for (values <- map.keySet) {
+      println(values)
+    }
+
+    println("----------foreach-----------")
+    map.foreach(elem => println(elem._1, elem._2))
+  }
+}
+```
+
+
+
+### Set 集合
+
+```scala
+object Demo01 {
+
+  def main(args: Array[String]): Unit = {
+    //创建 ⼀ 个不可变Set
+    val set1: Set[Any] = Set(10, 2, 5, 9, "a", "bb", "aa")
+    println(set1)
+
+    // 创建⼀个可变Set
+    val set2: mutable.Set[String] = mutable.Set("a", "c", "b")
+    set2 += "100"
+    set2.add("d")
+    println(set2)
+    set2 -= "d"
+    set2 -= "x" // 不存在不会 exception
+    set2.remove("a")
+    set2.remove("x") // 不存在不会 exception
+    println(set2)
+
+    println("---------------------")
+    for (elem <- set2) {
+      println(elem)
+    }
+
+    println("---------------------")
+    set2.foreach(println)
+
+    println("---------------------")
+    println(set2.max)
+  }
+}
+```
+
+
+
+## 集合操作
+
+* map
+* flatmap
+* filter
+* reduce
+* fold
+* scan
+* zip
+* iterator
+* stream
+* view
+* 线程安全的集合
+* 并⾏集合
+* sort排序
+* groupby分组
+
+### Map
+
+```scala
+object Demo01 {
+  def main(args: Array[String]): Unit = {
+    val list = List(1, 2, 3, 4, "abc")
+
+    // map 映射(实现类型转换)
+    list.map(item => if (item.isInstanceOf[Int]) item.asInstanceOf[Int] else item)
+      .foreach(println)
+
+    // 模式匹配
+    println("-----------------")
+    list.map(addOne).foreach(println)
+
+    // 模式匹配
+    println("-----------------")
+    list.map(item => {
+      item match {
+        case i: Int => (i + 1)
+        case _ => item
+      }
+    }).foreach(println)
+
+    // 模式匹配
+    println("-----------------")
+    list.map {
+      case i: Int => (i + 1)
+      case item => item
+    }.foreach(println)
+  }
+
+  // 模式匹配
+  def addOne(item: Any) = {
+    item match {
+      case x: Int => x + 1
+      //case _ => item  // 返回item
+      case _ =>  				// 返回()
+    }
+  }
+}
+```
+
+### flatmap拍平
+
+
+
+### filter过滤
+
+### reduce归纳
+
+### fold折叠
+
+### scan扫描
+
+### zip
+
+### iterator
+
+### stream
+
+lazy 属性
+
+### view
+
+每次都会重新计算
+
+### sort排序
+
+* sort
+* sortwith
+* sortby
+
+### groupby分组
+
+### 线程安全的集合
+
+### 并⾏集合
+
+
+
+## 函数式⾼级编程
+
+* 偏函数
+* 作为值的函数
+* 匿名函数
+* 作为参数的函数
+* 参数(类型)推断
+* ⾼阶函数
+* 闭包
+* 函数柯⾥化
+* 控制抽象
+* 部分应⽤函数
+
+### 偏函数
+
+```scala
+object Demo02 {
+  def main(args: Array[String]): Unit = {
+
+    val fun: PartialFunction[Any, Int] = new PartialFunction[Any, Int] {
+      // 满足要求的保留
+      override def isDefinedAt(x: Any): Boolean = {
+        x.isInstanceOf[Int]
+      }
+
+      // 应用
+      override def apply(v1: Any): Int = {
+        v1.asInstanceOf[Int] + 1
+      }
+    }
+
+    val list = List(1, 2, 3, 4, "abc")
+    val list2: List[Int] = list.collect(fun)
+    println(list2)
+
+
+    // 偏函数简写
+    val fun2: PartialFunction[Any, Int] = {
+      case x: Int => x + 1
+    }
+    val list3: List[Int] = list.collect(fun2)
+    println(list3)
+  }
+}
+```
+
+
+
+### 作为值的函数
+
+```scala
+object Demo03 {
+  def main(args: Array[String]): Unit = {
+    // 普通调用函数
+    println(addOne(10))
+
+    // 反函数当成值
+    val fun = addOne _
+    println(fun(10))
+  }
+
+  def addOne(x: Int) = {
+    x + 1
+  }
+}
+```
+
+
+
+### 匿名函数
+
+```scala
+object Demo04 {
+
+  def main(args: Array[String]): Unit = {
+    // 定义一个匿名函数
+    val square = (x: Int) => x * x
+
+    // 调用一个匿名函数
+    println(square(10))
+
+    // 匿名函数当成一个参数
+    //List(10, 20, 30).map(square).foreach(println)
+    List(10, 20, 30).map(square).foreach(println)
+
+    println("-----------------------------")
+
+    // 定义一个匿名函数
+    val fun: Int => Int = foo()
+    println(foo()(100))
+    println(fun(100))
+
+    // 上面意思同下
+    def fun2 = (x: Int) => x * 2
+
+    println(fun2(100))
+  }
+
+  // 返回值是一个匿名函数
+  def foo():Int=>Int = {
+    x: Int => x * 2
+  }
+}
+```
+
+
+
+### 作为参数的函数
+
+```scala
+object Demo05 {
+
+  def main(args: Array[String]): Unit = {
+    println(evaluate(math.sqrt _))
+    println(evaluate(math.sqrt))
+    println(evaluate(math.ceil))
+    println(evaluate(math.floor))
+    println(evaluate(x => x + 10))
+  }
+
+  // 参数是一个函数
+  def evaluate(i: Double => Double): Double = {
+    i(0.25)
+  }
+}
+```
+
+
+
+### 作为参数的函数
+
+```scala
+object Demo06 {
+
+  def main(args: Array[String]): Unit = {
+    val fun1 = evaluate((x: Double) => x + 10)
+    val fun2 = evaluate((x) => x + 10)
+    val fun3 = evaluate(x => x + 10)
+    val fun4 = evaluate(_ + 10)
+    println(fun1, fun2, fun3, fun4)
+  }
+
+  // 参数是一个函数
+  def evaluate(i: Double => Double): Double = {
+    i(0.25)
+  }
+}
+```
+
+![image-20190418141401909](Basic.assets/image-20190418141401909.png)
+
+### ⾼阶函数
+
+* map
+* filter
+* reduce
+* foreach
+* sortwith
+
+
+
+### 闭包
+
+闭包就是⼀个函数和与其相关的引⽤环境(变量)组合的⼀个整体(实体), **如果⼀个函数访问了外部函数的局部变量, 那么就可以把这个函数看成⼀个闭包.**
+
+````scala
+object Demo01 {
+
+  def main(args: Array[String]): Unit = {
+    val f1 = foo()
+    println(f1()) // 11
+    //println(f1()) // 12
+
+    val f2 = foo()
+    //println(f2()) // 11
+    println(foo())
+  }
+
+  def foo1() = {
+    10
+  }
+
+  def foo() = {
+    var i: Int = 10
+    // 持有外部变量 i 的引用
+    //() => i += 1; i
+    //var fun = () => {
+    //  i += 1
+    //}
+    () => {
+      i += 1
+    }
+      i
+    //{
+    //  i
+    //}
+    //{
+    //  100
+    //}
+  }
+}
+````
+
+```scala
+object Demo02 {
+  def main(args: Array[String]): Unit = {
+    val fun: String => String = makeSuffix("mp4")
+    println(fun("hadoop.mp4"))
+    println(fun("golang.mp4"))
+    println(fun("spark"))
+  }
+
+  def makeSuffix(suffix: String) = {
+    fileName: String => {
+      if (fileName.endsWith(suffix))
+        fileName
+      else
+        fileName + "." + suffix
+    }
+  }
+}
+```
+
+
+
+### 函数柯⾥化
+
+```scala
+object Demo01 {
+
+  def main(args: Array[String]): Unit = {
+    // 如果想计算  6 * 8, 6 * 9 ...
+    println(normalMul(6, 7))
+    println(mul(6)(8))
+    println(mul(6)(7))
+
+    val fun: Int => Int = mul(6) // fun = y => 6 * y
+    val i: Int = fun(7) // 6 * 7
+    println(i)
+
+    println("-----------------")
+    println(mul2(6)(7))
+  }
+
+  // 正常写法
+  def normalMul(x: Int, y: Int) = {
+    x * y
+  }
+
+  // 函数柯⾥化
+  def mul(x: Int): Int => Int = {
+    y => x * y
+  }
+
+  // 柯里化简化方法
+  def mul2(x: Int)(y: Int): Int ={
+    x * y
+  }
+}
+```
+
+
+
+## 模式匹配
+
+* 值匹配
+* 类型匹配
+* 数组匹配
+* 列表匹配
+* 元组匹配
+* 对象匹配
+
+### 语法
+
+### 值匹配
+
+### 类型匹配
+
+### 对象匹配
+
+匹配对象时,会去检查该类伴生对象的 unappley
+
+* unapply()
+* unappleSeq()

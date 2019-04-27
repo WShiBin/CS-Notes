@@ -15,8 +15,11 @@ Show me your .vimrc file
 ## 资料
 
 官网:[https://www.vim.org](https://www.vim.org/)
+
 Github:[https://github.com/vim/vim](https://github.com/vim/vim)
+
 书籍:vim 实用技巧
+
 推荐的 vimrc 配置:[https://github.com/amix/vimrc](https://github.com/amix/vimrc)
 
 
@@ -110,8 +113,8 @@ Github:[https://github.com/vim/vim](https://github.com/vim/vim)
 * /
 * ?
 * n/N
-* #
-* *
+* `#`
+* `*`
 * f/t
 * F/T
 * ;
