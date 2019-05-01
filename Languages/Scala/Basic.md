@@ -1161,8 +1161,15 @@ object Demo01 {
     val map = mutable.Map[String, Int](("a", 1), ("b", 2), ("c", 3))
     val map2 = inmutable.Map("a" -> 1, "b" -> 2, "c" -> 3)
 
+    // add element
     map("d") = 4
+    map += "g" -> 7
     map += ("e" -> 5, "f" -> 6)
+    
+    // add map
+    
+    
+    // delete element
     map.remove("e")
     map -= ("f")
     //map.clear()

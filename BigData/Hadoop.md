@@ -254,4 +254,19 @@ com.hadoop.compression.lzo.LzopCodec
 
 2）同步core-site.xml到hadoop103、hadoop104
 
-[atguigu@hadoop102 hadoop]$ xsync core-site.xml
+```shell
+> xsync core-site.xml
+```
+
+
+
+关闭 Safe Mode
+
+```shell
+> bin/hadoop dfsadmin -safemode leave
+```
+
+
+
+
+

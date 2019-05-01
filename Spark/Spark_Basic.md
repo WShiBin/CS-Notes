@@ -55,18 +55,18 @@ Spark 设计为可以高效地在一个计算节点到数千个计算节点之�
 
 ```shell
 # Hadoop
-http://hadoop102:50070 hdfs
-http://hadoop102:19888/jobhistory hadoop jobhistory
-http://hadoop103:8088/cluster yarn cluster
+http://hadoop102:50070 # hdfs
+http://hadoop102:19888/jobhistory # hadoop jobhistory
+http://hadoop103:8088/cluster # yarn cluster
 
 start-dfs.sh
 start-yarn.sh
 mr-jobhistory-daemon.sh start historyserver # hadoop jobhistory server
 
 # Spark
-http://hadoop102:4040/jobs/ spark jobs
-http://hadoop102:18080/ spark history server
-http://hadoop102:8080/ Spark Master
+http://hadoop102:4040/jobs/ # spark jobs
+http://hadoop102:18080/ # spark history server
+http://hadoop102:8080/ # Spark Master
 
 sbin/start-history-server.sh # spark history server
 ```
