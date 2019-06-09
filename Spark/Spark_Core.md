@@ -82,6 +82,31 @@ object RDDCreate {
    * join
    * cogroup
 
+```scala
+// 都是调用combineByKeyWithClassTag
+// 三个角度:零值-区内-区间
+
+// 没有零值,区内函数和区间函数一样
+reduceByKey(func: (V, V) => V)
+    combineByKeyWithClassTag[V]((v: V) => v, func, func, partitioner)
+
+// zeroValue,区内和区间相同
+foldByKey(zeroValue: V)(func: (V, V) => V):
+    combineByKeyWithClassTag[V]((v: V) => cleanedFunc(createZero(), v), cleanedFunc, cleanedFunc, partitioner)
+
+// zeroValue:每个分区取一个零值
+// seqOp:区内,
+// combOp:分区间
+aggregateByKey[U: ClassTag](zeroValue: U)(seqOp: (U, V) => U, combOp: (U, U) => U):
+    combineByKeyWithClassTag[U]((v: V) => cleanedSeqOp(createZero(), v), cleanedSeqOp, combOp, partitioner)
+
+// createCombiner:来自分区的第一个value
+// mergeValue:区内
+// mergeCombiners:区间
+combineByKey[C](createCombiner: V => C, mergeValue: (C, V) => C, mergeCombiners: (C, C) => C)
+    combineByKeyWithClassTag(createCombiner, mergeValue, mergeCombiners, partitioner, mapSideCombine, serializer)(null)
+```
+
 
 
 ### RDD Actions
@@ -205,11 +230,15 @@ object CheckPointDemo {
 
 ## 键值对RDD数据分区
 
-HashPartitioner
+* HashPartitioner(Default)
 
-RangePartitioner
+* RangePartitioner
 
+> 只有Key-Value类型的RDD才有分区,非Key-Value类型的RDD分区的值是None
 
+### 获取分区
+
+RDD的partitioner 属性来获取 RDD 的分区方式。它会返回一个 scala.Option 对象， 通过get方法获取其中的值pairs.partitioner
 
 ### Hash分区
 
@@ -261,7 +290,7 @@ HashPartitioner源码
 
 ### Range 分区
 
-HashPartitioner分区弊端：可能导致每个分区中数据量的不均匀，极端情况下会导致某些分区拥有RDD的全部数据
+HashPartitioner分区弊端：可能导致每个分区中**数据量的不均匀**，极端情况下会导致某些分区拥有RDD的全部数据
 
 RangePartitioner作用：将一定范围内的数映射到某一个分区内，尽量保证每个分区中数据量的均匀，而且分区与分区之间是有序的，一个分区中的元素肯定都是比另一个分区内的元素小或者大，但是分区内的元素是不能保证顺序的。简单的说就是将一定范围内的数映射到某一个分区内。实现过程为：
 

@@ -10,7 +10,7 @@
 
 ## Sqoop原理
 
-> 将导入和导出的命令翻译成 mapreduce程序来实现
+> 将导入和导出的命令翻译成 mapreduce程序来实现,并且只有map阶段
 >
 > 在翻译出的 mapreduce中主要对inpuformat 和 outputformat进行定制
 
@@ -481,7 +481,7 @@ $ bin/sqoop import \
 | 16       | --where                         | 从关系数据库导入数据时的查询条件                             |
 | 17       | --z或--compress                 | 允许压缩                                                     |
 | 18       | --compression-codec             | 指定hadoop压缩编码类，默认为gzip(Use Hadoop codec default gzip) |
-| 19       | --null-string <null-string>     | string类型的列如果null，替换为指定字符串                     |
+| 19       | --null-string <null-string>     | <u>string类型的列如果null，替换为指定字符串</u>              |
 | 20       | --null-non-string <null-string> | 非string类型的列如果null，替换为指定字符串                   |
 | 21       | --check-column <col>            | 作为增量导入判断的列名                                       |
 | 22       | --incremental <mode>            | mode：append或lastmodified                                   |
@@ -518,7 +518,7 @@ $ bin/sqoop create-hive-table \
 | 6        | --update-mode <mode>                  | updateonlyallowinsert(默认)                                  |
 | 7        | --input-null-string <null-string>     | 请参考import该类似参数说明                                   |
 | 8        | --input-null-non-string <null-string> | 请参考import该类似参数说明                                   |
-| 9        | --staging-table <staging-table-name>  | 创建一张临时表，用于存放所有事务的结果，然后将所有事务结果一次性导入到目标表中，防止错误。 |
+| 9        | --staging-table <staging-table-name>  | <u>创建一张临时表，用于存放所有事务的结果，然后将所有事务结果一次性导入到目标表中，防止错误</u>。 |
 | 10       | --clear-staging-table                 | 如果第9个参数非空，则可以在导出操作执行前，清空临时事务结果表 |
 
  
@@ -809,3 +809,4 @@ $ bin/sqoop metastore
 | 1        | --shutdown | 关闭metastore |
 
  
+

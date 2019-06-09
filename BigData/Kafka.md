@@ -56,13 +56,16 @@ common cmd
 # --replication-factor  定义副本数
 # --partitions  定义分区数
 
+# 查看topic isr队列
+> kafka-topics.sh --zookeeper hadoop102:2181 --describe --topic topic_nam
+
 # delete topic
 > bin/kafka-topics.sh --zookeeper hadoop102:2181 --delete --topic first
 
 # send msg to topic
 > bin/kafka-console-producer.sh --broker-list hadoop102:9092 --topic first_topic
 #
-> bin/kafka-console-consumer.sh --zookeeper hadoop102:2181 --from-beginning --topic first_topic
+> bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --from-beginning --topic first_topic
 # show more details about topic
 > bin/kafka-topics.sh --zookeeper hadoop102:2181 --describe --topic first_topic
 ```
@@ -157,4 +160,6 @@ kafka-manager.zkhosts=${?ZK_HOSTS}
 start.time, end.time, data.consumed.in.MB, MB.sec, data.consumed.in.nMsg, nMsg.sec
 2019-04-08 13:01:32:207, 2019-04-08 13:01:34:480, 9.5367, 4.1957, 100000, 43994.7206
 ```
+
+
 

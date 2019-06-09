@@ -16,7 +16,17 @@
 
 实现Interceptor 
 
+### CMD
 
+```bash
+> bin/flume-ng agent --conf conf/ --name a1 --conf-file conf/file-flume-hdfs.conf -Dflume.root.logger=Debug,consol
+
+```
+
+* --conf flume配置
+* --name flume名字
+* --conf-file job任务的配置
+* -D 动态配置
 
 
 

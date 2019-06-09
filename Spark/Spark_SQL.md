@@ -66,27 +66,19 @@ object SparkSQLDemo {
         val sparkSession: SparkSession = SparkSession.builder()
             .master("local[*]").appName("HelloWorld")
             .config("spark.some.config.option", "some-value")
-            .getOrCreate()
-        
+            .getOrCreate()    
         //导入隐式转换
         import sparkSession.implicits._
         //读取本地文件，创建DataFrame
-
         val df = sparkSession.read.json("examples/src/main/resources/people.json")
-
         //打印
         df.show()
-
         //DSL风格：查询年龄在21岁以上的
-
         df.filter($"age" > 21).show()
-
         //创建临时表
         df.createOrReplaceTempView("persons")
-
         //SQL风格：查询年龄在21岁以上的
         sparkSession.sql("SELECT * FROM persons where age > 21").show()
-
         //关闭连接
         sparkSession.stop()
     }

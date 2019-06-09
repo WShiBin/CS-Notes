@@ -487,3 +487,17 @@ WordCount.jar \
 /out
 ```
 
+远程调试
+
+```shell
+> spark-submit --master local[2] \
+# 指定端口号
+--driver-java-options "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=18888" \
+# 指定main class,jar包
+--class com.atguigu.user_behavior.UserBehaviorCleaner UserBehaviorCleaner.jar \
+# 指定main方法参数
+hdfs://hadoop102:9000/user/hive/warehouse/ods.db/origin_user_behavior/2019-05-13 \
+hdfs://hadoop102:9000/user/hive/warehouse/tmp.db/user_behavior_20190513
+```
+
+![image-20190529161030154](./Spark_Basic.assets/image-20190529161030154.png)

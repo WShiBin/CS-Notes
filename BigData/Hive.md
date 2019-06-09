@@ -15,45 +15,63 @@ MR.Tez,Spark
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 <configuration>
-
+		
+    <!--元数据-->
     <property>
         <name>javax.jdo.option.ConnectionURL</name>
-        <value>jdbc:mysql://hadoop005:3306/metastore?createDatabaseIfNotExist=true</value>
+        <value>jdbc:mysql://hadoop102:3306/metastore?createDatabaseIfNotExist=true</value>
         <description>JDBC connect string for a JDBC metastore</description>
     </property>
 
+  	<!--驱动-->
     <property>
         <name>javax.jdo.option.ConnectionDriverName</name>
         <value>com.mysql.jdbc.Driver</value>
         <description>Driver class name for a JDBC metastore</description>
     </property>
 
+  	<!--用户名-->
     <property>
         <name>javax.jdo.option.ConnectionUserName</name>
         <value>root</value>
         <description>username to use against metastore database</description>
     </property>
 
+  	<!--密码-->
     <property>
         <name>javax.jdo.option.ConnectionPassword</name>
         <value>shibin</value>
         <description>password to use against metastore database</description>
     </property>
 
+  	<!--数据存放目录,默认hdfs-->
     <property>
         <name>hive.metastore.warehouse.dir</name>
-        <value>/hive</value>
+        <value>/user/hive/warehouse</value>
         <description>location of default database for the warehouse</description>
     </property>
 
+  	<!--hive命令时,打印头-->
     <property>
         <name>hive.cli.print.header</name>
         <value>true</value>
     </property>
 
+    <!--hive命令时,打印当前数据库-->
     <property>
         <name>hive.cli.print.current.db</name>
         <value>true</value>
+    </property>
+  
+    <property>
+        <name>hive.metastore.schema.verification</name>
+        <value>false</value>
+    </property>
+
+  	<!--更换计算引擎为Tez,默认MR计算,见Tez.md-->
+    <property>
+        <name>hive.execution.engine</name>
+        <value>tez</value>
     </property>
 
 </configuration>
@@ -187,12 +205,12 @@ public class HelloHive {
 ```json
 {
     "name": "songsong",
-    "friends": ["bingbing" , "lili"] ,       //列表Array, 
-    "children": {                      //键值Map,
+    "friends": ["bingbing" , "lili"] ,       	//列表Array, 
+    "children": {                      				//键值Map,
         "xiao song": 18 ,
         "xiaoxiao song": 19
     },
-    "address": {                      //结构Struct,
+    "address": {                      				//结构Struct,
         "street": "hui long guan" ,
         "city": "beijing" 
     }
@@ -249,7 +267,7 @@ Hive shell;
 ### 创建库
 
 ```sql
-> create database db_name;
+> create database db_name;			-- 默认hive-site.xml中,hive.metastore.warehouse.dir
 > create database if not exists db_name;
 > create database db_name location '/hive/hb_hive.db';
 ```
@@ -276,7 +294,7 @@ Hive shell;
 ```sql
 > drop database db_name;
 > drop database if exists db_name;
-> drop database db_name cascade; --强制删除
+> drop database db_name cascade; -- 强制删除
 ```
 
 ### 创建表
@@ -410,6 +428,7 @@ alter table dept_partition add partition(month='201705') partition(month='201704
 alter table dept_partition drop partition (month='201704');
 alter table dept_partition drop partition (month='201705'), partition (month='201706');
 
+-- 显示表的分区
 show partitions dept_partition;
 desc formatted dept_partition;
 ```
@@ -724,13 +743,14 @@ select job, avg(sal) as avg_sal from  emp group by job;
 
 ### 排序
 
-* 全局排序（Order By）
+* 区内排序(Sort By)
+* 全局排序(Order By)
 * 按照别名排序
 * 多个列排序
 
 
 
-#### 每个MapReduce内部排序（Sort By）
+#### 每个MapReduce内部排序-Sort By
 
 ```sql
 select * from emp sort by empno desc;
@@ -738,17 +758,21 @@ select * from emp sort by empno desc;
 insert overwrite local directory '/opt/module/datas/result' select * from emp sort by deptno desc;
 ```
 
-#### 分区排序（Distribute By）
+#### 全局排序Order By
+
+#### 分区Distribute By
+
+一般配合sort by使用(分区了不排序没什么意义)
 
 ```sql
 insert overwrite local directory '/opt/module/datas/distribute-result' select * from emp distribute by deptno sort by empno desc;
 ```
 
-
-
 #### Cluster By
 
 > 当distribute by和sorts by字段相同时，可以使用cluster by方式。
+>
+> cluster by clumon1 == distribut by clumon1 sort by clumon1
 >
 > cluster by除了具有distribute by的功能外还兼具sort by的功能。但是排序只能是升序排序，不能指定排序规则为ASC或者DESC。
 
@@ -887,7 +911,7 @@ hive (gmall)> create temporary function flat_analizer as 'com.ishibin.udtf.Event
 
 
 
-### 自定义UDF函数(一对多)
+### 自定义UDTF函数(一对多)
 
 - 编写代码
   - 继承GenericUDTF
@@ -897,3 +921,18 @@ hive (gmall)> create temporary function flat_analizer as 'com.ishibin.udtf.Event
 - hive 中添加 jar 包
 - 定义函数
 - 调用函数
+
+
+
+## 调优
+
+
+
+### 表的优化
+
+#### 动态分区调整
+
+```shell
+set hive.exec.dynamic.partition=true # 默认
+```
+
