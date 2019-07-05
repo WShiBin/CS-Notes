@@ -58,7 +58,7 @@ zkServer.sh {start|start-foreground|stop|restart|status|upgrade|print-cmd}
 ### Client 启动
 
 ```shell
-zkServer.sh –server hostname:port
+zkCli.sh –server hostname:port
 ```
 
 默认连接localhost:2181

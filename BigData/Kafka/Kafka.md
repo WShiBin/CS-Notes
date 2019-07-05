@@ -1,4 +1,4 @@
-<img src="Kafka.assets/kafka_diagram.png" width="400px">
+<img src="assets/kafka_diagram.png" width="400px">
 
 
 
@@ -97,7 +97,7 @@ kafka-manager.zkhosts=${?ZK_HOSTS}
 
 <http://hadoop102:7456/>
 
-![image-20190408201535949](Kafka.assets/image-20190408201535949.png)
+![image-20190408201535949](assets/image-20190408201535949.png)
 
 更多 details: <https://blog.csdn.net/u011089412/article/details/87895652>
 

@@ -42,7 +42,7 @@ Apache Kylin 的工作原理本质上是 MOLAP（Multidimensional Online Analyti
 
 ### Cube和Cuboid
 
-![image-20190401190346714](Kylin.assets/image-20190401190346714.png)
+![image-20190401190346714](assets/image-20190401190346714.png)
 
 每一种维度组合就是一个Cuboid，16个Cuboid整体就是一个Cube
 
@@ -50,7 +50,7 @@ Apache Kylin 的工作原理本质上是 MOLAP（Multidimensional Online Analyti
 
 ## Kylin架构
 
-![image-20190401190056526](Kylin.assets/image-20190401190056526.png)
+![image-20190401190056526](assets/image-20190401190056526.png)
 
 预计算过程是Kylin从Hive中读取原始数据，按照我们选定的维度进行计算，并将结果集保存到Hbase中，默认的计算引擎为MapReduce，可以选择Spark作为计算引擎。
 
@@ -76,11 +76,11 @@ Apache Kylin 的工作原理本质上是 MOLAP（Multidimensional Online Analyti
 
 ### 逐层构建算法（layer）
 
-![image-20190401190519778](Kylin.assets/image-20190401190519778.png)
+![image-20190401190519778](assets/image-20190401190519778.png)
 
 ### 快速构建算法（inmem）
 
-![image-20190401190616331](Kylin.assets/image-20190401190616331.png)
+![image-20190401190616331](assets/image-20190401190616331.png)
 
 
 
@@ -123,8 +123,8 @@ create external table if not exists default.emp(
     ename string,
     job string,
     mgr int,
-    hiredate string, 
-    sal double, 
+    hiredate string,
+    sal double,
     comm double,
     deptno int)
 row format delimited fields terminated by '\t';
@@ -180,19 +180,19 @@ emp.txt
    4. Advanced Setting
    5. Configuration Overwrites
 
- 
+
 
 **Load Table Metadata: 推荐Database_name.table_name**
 
-![image-20190401191904340](Kylin.assets/image-20190401191904340.png)
+![image-20190401191904340](assets/image-20190401191904340.png)
 
 **Load Table Metadata可能碰到的问题**
 
-![image-20190401204740547](Kylin.assets/image-20190401204740547.png)
+![image-20190401204740547](assets/image-20190401204740547.png)
 
 打开`bin/kylin.sh` 文件, 在如下位置添加:`${hive_dependency}`
 
-![image-20190401204934158](Kylin.assets/image-20190401204934158.png)
+![image-20190401204934158](assets/image-20190401204934158.png)
 
 
 
@@ -226,7 +226,7 @@ import java.sql.ResultSet;
  * Time: 20:10
  */
 public class HelloKylin {
-	
+
 	public static void main(String[] args) throws Exception {
 
 		// load Driver
@@ -261,7 +261,7 @@ public class HelloKylin {
 }
 ```
 
-Print 
+Print
 
 ```
 10875
@@ -289,21 +289,21 @@ http://hadoop005:8080
 
 #### conf Zeepelin
 
-![img](Kylin.assets/1552639123.png-atguiguText)
+![img](assets/1552639123.png-atguiguText)
 
 
 
-![img](Kylin.assets/1552639186.png-atguiguText)
+![img](assets/1552639186.png-atguiguText)
 
 
 
 #### 使用 Zeppelin 查询
 
-![img](Kylin.assets/1552639245.png-atguiguText)
+![img](assets/1552639245.png-atguiguText)
 
 
 
-![img](Kylin.assets/1552639287.png-atguiguText)
+![img](assets/1552639287.png-atguiguText)
 
 
 
@@ -311,7 +311,7 @@ http://hadoop005:8080
 %kylin select deptno, sum(sal) from emp group by deptno
 ```
 
-![img](Kylin.assets/1552643204.png-atguiguText)
+![img](assets/1552643204.png-atguiguText)
 
 
 

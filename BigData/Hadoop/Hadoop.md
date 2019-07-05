@@ -165,9 +165,32 @@ yarn-site.xml
 > hadoop jar hadoop-mapreduce-client-jobclient-2.7.2-tests.jar TestDFSIO -clean
 ```
 
+hadoop命令行 与job相关的：
 
+```shell
+hadoop命令行 与job相关的：
+# 命令行工具 •
+# 1.查看 Job 信息：
+hadoop job -list
+# 2.杀掉 Job：
+hadoop  job –kill  job_id
+# 3.指定路径下查看历史日志汇总：
+hadoop job -history output-dir
+# 4.作业的更多细节：
+hadoop job -history all output-dir
+# 5.打印map和reduce完成百分比和所有计数器：
+hadoop job –status job_id
+# 6.杀死任务。被杀死的任务不会不利于失败尝试：
+hadoop jab -kill-task <task-id>
+# 7.使任务失败。被失败的任务会对失败尝试不利：
+hadoop job  -fail-task <task-id>
 
-
+# Hadoop version 大于等于2.3.0
+# 查看正在运行的 Hadoop 任务：
+yarn application -list
+# 关闭 Hadoop 任务进程：
+yarn application -kill $ApplicationId
+```
 
 
 

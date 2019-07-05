@@ -6,11 +6,13 @@
 
 https://cwiki.apache.org/confluence/display/Hive/LanguageManual+LZO
 
-![image-20190410190526237](Tez.assets/image-20190410190526237.png)
+![image-20190410190526237](assets/image-20190410190526237.png)
 
 用Hive直接编写MR程序，假设有四个有依赖关系的MR作业，上图中，绿色是Reduce Task，云状表示写屏蔽，需要将中间结果持久化写到HDFS。
 
 **Tez可以将多个有依赖的作业转换为一个作业，这样只需写一次HDFS，且中间节点较少，从而大大提升作业的计算性能。**
+
+> 多个mr, 转成mrrr
 
 
 

@@ -667,7 +667,7 @@ class Console extends Exception with Logger {}
 
 ## 隐式转换
 
-- 隐式参数
+- 隐式函数
 - 隐式值
 - 隐式类
 
@@ -686,6 +686,8 @@ class Console extends Exception with Logger {}
 ### 隐式函数
 
 > 隐式转换与函数名称无关，只与函数签名（函数参数类 型和返回值类型）有关
+>
+> 作用:拓展功能
 
 ```scala
 object Demo02 {
@@ -694,7 +696,7 @@ object Demo02 {
       d.toInt
     }
 
-    // 3.5会去找一个参数为 Double 的隐式函数,且正好返回值是 Int 类型
+    // 3.5(Double)会去找一个参数为 Double 的隐式函数,且正好返回值是 Int 类型
     val num: Int = 3.5
     println("num =" + num)
   }
@@ -852,7 +854,7 @@ object Demo05 {
 
 ### 隐式类
 
-隐式类是隐式函数的转换
+隐式类是隐式函数的转换,用来拓展类的功能
 
 * 其所带的构造参数有且只能有⼀个
 * 隐式类必须被定义在“类”或“伴⽣对象”或“包对象”⾥，即隐式类不能是顶级的( objects )。
@@ -863,7 +865,8 @@ object Demo05 {
 object Demo01 {
   def main(args: Array[String]): Unit = {
     // implicit def hehe(file: File) = new RichFile(file)
-
+	
+    // 会去找一个参数是file类型的构造方法,构建对象,并调用它的方法
     new File("../obj/Demo04").read()
   }
  
@@ -1590,6 +1593,8 @@ object Demo02 {
 
 
 ### 函数柯⾥化
+
+柯里化(Currying)指的是将原来接受两个参数的函数变成新的接受一个参数的函数的过程。新的函数返回一个以原有第二个参数为参数的函数。
 
 ```scala
 object Demo01 {

@@ -19,19 +19,19 @@ Spark 是一个快速(基于内存), 通用, 可扩展的集群计算引擎
 
 ### Spark 内置模块
 
-![image-20190423095633275](Spark.assets/image-20190423095633275.png)
+![image-20190423095633275](assets/image-20190423095633275.png)
 
-![image-20190423191359855](Spark.assets/image-20190423191359855.png)
+![image-20190423191359855](assets/image-20190423191359855.png)
 
-#### Spark Core
+#### Spark Core(离线)
 
 实现spark的基本功能,包含任务调度,内存管理,错误恢复,与存储文件系统交互等模块,Spark Core中还包含了对弹性分布式数据集(Resilient Distributed DataSet，简称RDD)的API定义
 
-#### Spark SQL
+#### Spark SQL(交互式)
 
 是Spark用来操作结构化数据的程序包。通过Spark SQL，我们可以使用 SQL或者Apache Hive版本的SQL方言(HQL)来查询数据。Spark SQL支持多种数据源，比如Hive表、Parquet以及JSON等
 
-#### Spark Streaming
+#### Spark Streaming(实时)
 
 是Spark提供的对实时数据进行流式计算的组件。提供了用来操作数据流的API，并且与Spark Core中的 RDD API高度对应
 
@@ -57,7 +57,7 @@ Spark 设计为可以高效地在一个计算节点到数千个计算节点之�
 # Hadoop
 http://hadoop102:50070 # hdfs
 http://hadoop102:19888/jobhistory # hadoop jobhistory
-http://hadoop103:8088/cluster # yarn cluster
+http://hadoop103:8088/cluster # hadoop cluster (Nodes, Apps)
 
 start-dfs.sh
 start-yarn.sh
@@ -96,7 +96,7 @@ sbin/start-history-server.sh # spark history server
 
 **1）Driver（驱动器）**
 
-Spark的驱动器是执行开发程序中的main方法的线程。它负责开发人员编写的用来创建SparkContext、创建RDD，以及进行RDD的转化操作和行动操作代码的执行。如果你是用Spark Shell，那么当你启动Spark shell的时候，系统后台自启了一个Spark驱动器程序，就是在Spark shell中预加载的一个叫作 sc的SparkContext对象。如果驱动器程序终止，那么Spark应用也就结束了。主要负责：
+Spark的驱动器是执行开发程序中的main方法的**线程**。它负责开发人员编写的用来创建SparkContext、创建RDD，以及进行RDD的转化操作和行动操作代码的执行。如果你是用Spark Shell，那么当你启动Spark shell的时候，系统后台自启了一个Spark驱动器程序，就是在Spark shell中预加载的一个叫作 sc的SparkContext对象。如果驱动器程序终止，那么Spark应用也就结束了。主要负责：
 
 * 将用户程序转化为作业（Job）
 * 在Executor之间调度任务（Task）
@@ -185,7 +185,7 @@ Type :help for more information.
 
 #### 提交流程
 
-![image-20190423195506752](Spark.assets/image-20190423195506752.png)
+![image-20190423195506752](assets/image-20190423195506752.png)
 
 #### 数据流程
 
@@ -199,7 +199,7 @@ reduceByKey(_+_)：按照key将值进行聚合，相加；
 
 collect：将数据收集到Driver端展示。
 
-![image-20190423200248822](Spark.assets/image-20190423200248822.png)
+![image-20190423200248822](assets/image-20190423200248822.png)
 
 
 
@@ -207,7 +207,7 @@ collect：将数据收集到Driver端展示。
 
 构建一个由Master+Slave构成的Spark集群，使Spark程序运行在集群中，且有Cluster与Client模式两种。主要区别在于：Driver程序的运行节点
 
-![image-20190423200504706](Spark.assets/image-20190423200504706.png)
+![image-20190423200504706](assets/image-20190423200504706.png)
 
 ```shell
 > mv conf/spark-env.sh.template conf/spark-env.sh
@@ -289,7 +289,7 @@ export SPARK_HISTORY_OPTS="-Dspark.history.ui.port=18080 -Dspark.history.retaine
 
 #### HA配置
 
-![image-20190423202609492](Spark.assets/image-20190423202609492.png)
+![image-20190423202609492](assets/image-20190423202609492.png)
 
 ```shell
 # 启动 zookeeper 集群
@@ -331,7 +331,7 @@ yarn-client：Driver程序运行在客户端，适用于交互、调试，希望
 
 yarn-cluster：Driver程序运行在由RM（ResourceManager）启动的AM（APPMaster）适用于生产环境。
 
-![image-20190423203352825](Spark.assets/image-20190423203352825.png)
+![image-20190423203352825](assets/image-20190423203352825.png)
 
 hadoop 配置yarn-site.xml
 
@@ -377,7 +377,7 @@ YARN_CONF_DIR=/opt/module/hadoop-2.7.2/etc/hadoop
 spark.yarn.historyServer.address=hadoop102:18080
 spark.history.ui.port=18080
 
-> sbin/stop-history-server.sh 
+> sbin/stop-history-server.sh
 > sbin/start-history-server.sh
 > bin/spark-submit \
 --class org.apache.spark.examples.SparkPi \
@@ -446,7 +446,7 @@ import org.apache.spark.{SparkConf, SparkContext}
 
 /**
  * Created with IntelliJ IDEA.
- * Description: 
+ * Description:
  * User: Ben
  * Date: 2019-04-23
  * Time: 15:58
@@ -454,22 +454,22 @@ import org.apache.spark.{SparkConf, SparkContext}
 object HelloSpark {
 
   def main(args: Array[String]): Unit = {
-    
+
     // 1. 创建 SparkConf对象, 并设置 App名字
     val conf: SparkConf = new SparkConf()
       .setAppName("WordCount")
       .setMaster("local[*]") // 本地运行
-    
+
     // 2. 创建SparkContext对象
     val sc = new SparkContext(conf)
-    
+
     // 3. 使用sc创建RDD并执行相应的transformation和action
     sc.textFile("/Users/Ben/input/")
       .flatMap(_.split("\\W+"))
       .map((_, 1))
       .reduceByKey(_ + _)
       .saveAsTextFile("/Users/Ben/resut")
-    
+
     // 4. 关闭连接
     sc.stop()
   }
@@ -500,4 +500,4 @@ hdfs://hadoop102:9000/user/hive/warehouse/ods.db/origin_user_behavior/2019-05-13
 hdfs://hadoop102:9000/user/hive/warehouse/tmp.db/user_behavior_20190513
 ```
 
-![image-20190529161030154](./Spark_Basic.assets/image-20190529161030154.png)
+![image-20190529161030154](assets/image-20190529161030154.png)

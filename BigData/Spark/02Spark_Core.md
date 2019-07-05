@@ -90,7 +90,7 @@ object RDDCreate {
 reduceByKey(func: (V, V) => V)
     combineByKeyWithClassTag[V]((v: V) => v, func, func, partitioner)
 
-// zeroValue,区内和区间相同
+// 零值:zeroValue,区内和区间相同
 foldByKey(zeroValue: V)(func: (V, V) => V):
     combineByKeyWithClassTag[V]((v: V) => cleanedFunc(createZero(), v), cleanedFunc, cleanedFunc, partitioner)
 
@@ -100,7 +100,7 @@ foldByKey(zeroValue: V)(func: (V, V) => V):
 aggregateByKey[U: ClassTag](zeroValue: U)(seqOp: (U, V) => U, combOp: (U, U) => U):
     combineByKeyWithClassTag[U]((v: V) => cleanedSeqOp(createZero(), v), cleanedSeqOp, combOp, partitioner)
 
-// createCombiner:来自分区的第一个value
+// createCombiner:来自分区的第一个value转化过来
 // mergeValue:区内
 // mergeCombiners:区间
 combineByKey[C](createCombiner: V => C, mergeValue: (C, V) => C, mergeCombiners: (C, C) => C)
@@ -151,7 +151,7 @@ combineByKey[C](createCombiner: V => C, mergeValue: (C, V) => C, mergeCombiners:
 * Stage
 * Task
 
-![image-20190427212358365](SparkCore.assets/image-20190427212358365.png)
+![image-20190427212358365](Spark_Core.assets/image-20190427212358365.png)
 
 > Application->Job->Stage->Task每一层都是1对n的关系
 
@@ -188,9 +188,9 @@ object CacheDemo {
 
 > 缓存有可能丢失，或者存储存储于内存的数据由于内存不足而被删除，RDD的缓存容错机制保证了即使缓存丢失也能保证计算的正确执行。通过基于RDD的一系列转换，丢失的数据会被重算，由于RDD的各个Partition是相对独立的，因此只需要计算丢失的部分即可，并不需要重算全部Partition。
 
-![image-20190427205713538](SparkCore.assets/image-20190427205713538.png)
+![image-20190427205713538](assets/image-20190427205713538.png)
 
-![image-20190427205345793](SparkCore.assets/image-20190427205345793.png)
+![image-20190427205345793](assets/image-20190427205345793.png)
 
 
 
