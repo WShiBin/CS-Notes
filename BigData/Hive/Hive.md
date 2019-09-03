@@ -389,6 +389,8 @@ set hive.metastore.warehouse.dir;
 ```
 
 > **管理表会关联 dfs 上的数据, 删除表时,同时也会删除 dfs 中的数据**
+>
+> 应用场景:临时表, 中间表, 用完了就删除数据
 
 ```sql
 create table if not exists student2(
@@ -1028,7 +1030,7 @@ from
 
   * LAG(col [,offset] [,default]) OVER ([query_partition_clause] order_by_clause)：往前第n行数据
   * LEAD(col [,offset] [,default]) OVER ([query_partition_clause] order_by_clause)：往后第n行数据
-  * FIRST_VALUE(col [,false|ture]): 获取第一个,每二个参数:是否跳过NULL
+  * FIRST_VALUE(col [,false|ture]): 获取第一个,第二个参数:是否跳过NULL
   * LAST_VSLUE(col [,false|ture]): 获取最后一个值,一般配合order by + 窗口子句
 
 * The OVER clause
@@ -1281,9 +1283,11 @@ set hive.mapjoin.smalltable.filesize=25000000; -- 25M以下是小表
 
 #### 动态分区调整
 
+> 关系型数据库中，对分区表Insert数据时候，数据库自动会根据分区字段的值，将数据插入到相应的分区中，Hive中也提供了类似的机制，即动态分区(Dynamic Partition)，只不过，使用Hive的动态分区，需要进行相应的配置。
+
 ```sql
 set hive.exec.dynamic.partition=true; -- 默认
-set hive.exec.dynamic.partition.mode=nonstrict; -- 打开非严格模式
+set hive.exec.dynamic.partition.mode=nonstrict; -- 打开非严格模式, 默认是strict
 set hive.exec.max.dynamic.partitions=1000; -- 最大可以创建的分区数
 set hive.exec.max.created.files=100000; -- 最大可以创建的HDFS文件数
 ```
@@ -1360,5 +1364,39 @@ EXPLAIN [EXTENDED | DEPENDENCY | AUTHORIZATION] query
 
 hive > explain extended select * from emp;
 hive > explain extended select deptno, avg(sal) avg_sal from emp group by deptno;
+```
+
+
+
+## LZO
+
+docs:https://cwiki.apache.org/confluence/display/Hive/LanguageManual+LZO
+
+
+
+core-site.xml
+
+```xml
+<property>
+    <name>io.compression.codecs</name>
+<value>org.apache.hadoop.io.compress.GzipCodec,org.apache.hadoop.io.compress.DefaultCodec,org.apache.hadoop.io.compress.BZip2Codec,com.hadoop.compression.lzo.LzoCodec,com.hadoop.compression.lzo.LzopCodec</value>
+</property>
+
+<property>
+    <name>io.compression.codec.lzo.class</name>
+    <value>com.hadoop.compression.lzo.LzoCodec</value>
+</property>
+```
+
+
+
+```sql
+drop table if exists ods_start_log;
+CREATE EXTERNAL TABLE ods_start_log (`line` string)
+PARTITIONED BY (`dt` string)
+STORED AS
+  INPUTFORMAT 'com.hadoop.mapred.DeprecatedLzoTextInputFormat' -- lzo
+  OUTPUTFORMAT 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
+LOCATION '/warehouse/gmall/ods/ods_start_log';
 ```
 

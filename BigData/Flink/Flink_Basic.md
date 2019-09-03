@@ -32,7 +32,7 @@
 
 # **Flink** 流处理Api
 
-> Envrioment —> Source —> Transform —> Sink
+> Environment —> Source —> Transform —> Sink
 
 
 
@@ -129,7 +129,7 @@ Watermark
 
 
 
-## EvnetTimeWindow API
+## EventTimeWindow API
 
 ### 滚动窗口TumblingEventTimeWindows
 

@@ -90,7 +90,8 @@ object RDDCreate {
 reduceByKey(func: (V, V) => V)
     combineByKeyWithClassTag[V]((v: V) => v, func, func, partitioner)
 
-// 零值:zeroValue,区内和区间相同
+// 零值:zeroValue
+// 区内和区间函数相同
 foldByKey(zeroValue: V)(func: (V, V) => V):
     combineByKeyWithClassTag[V]((v: V) => cleanedFunc(createZero(), v), cleanedFunc, cleanedFunc, partitioner)
 
@@ -151,7 +152,7 @@ combineByKey[C](createCombiner: V => C, mergeValue: (C, V) => C, mergeCombiners:
 * Stage
 * Task
 
-![image-20190427212358365](Spark_Core.assets/image-20190427212358365.png)
+![image-20190427212358365](assets/image-20190427212358365.png)
 
 > Application->Job->Stage->Task每一层都是1对n的关系
 
