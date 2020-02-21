@@ -1,5 +1,11 @@
 {
     "files.associations": {
-        "stdio.h": "c"
+        "*.xml": "xml",
+        ".tmux.conf.local": "shellscript",
+        "stdio.h": "c",
+        "chrono": "cpp",
+        "iomanip": "cpp",
+        "__config": "cpp",
+        "__functional_03": "cpp"
     }
 }

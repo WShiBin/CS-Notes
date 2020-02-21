@@ -52,7 +52,17 @@
 
 
 
-![image-20181203002511191](/Users/Ben/ProjectClone/CS-Notes/Languages/Golang/Framework/nsq/readme.assets/image-20181203002511191-3767911.png)
+![image-20181203002511191](assets/image-20181203002511191-3767911.png)
+
+
+
+![image-20191029151619960](assets/image-20191029151619960.png)
+
+![image-20191029151809097](assets/image-20191029151809097.png)
+
+![image-20191029151957437](assets/image-20191029151957437.png)
+
+![image-20191029152316799](assets/image-20191029152316799.png)
 
 
 

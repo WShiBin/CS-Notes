@@ -25,9 +25,9 @@ func main() {
 	config := nsq.NewConfig()
 	config.LookupdPollInterval = 15 * time.Second
 
-	topic := "topic2"
 	//chanStr := "test_chan1"
 	//chanStr := "nsq_to_file"
+	topic := "topic2"
 	chanStr := "topic2_chan1"
 	nsqLookupAddr := "127.0.0.1:4161"
 	consumer, err := nsq.NewConsumer(topic, chanStr, config)

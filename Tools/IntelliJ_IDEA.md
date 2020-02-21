@@ -14,17 +14,17 @@
 
 show reformat file dialog
 
-![image-20190403230637039](IntelliJ_IDEA.assets/image-20190403230637039.png)
+![image-20190403230637039](assets/image-20190403230637039.png)
 
 ### 代码提示取消大小写匹配
 
-![image-20190403230842661](IntelliJ_IDEA.assets/image-20190403230842661.png)
+![image-20190403230842661](assets/image-20190403230842661.png)
 
 
 
 ### 代码注释的缩进
 
-![image-20190403231446928](IntelliJ_IDEA.assets/image-20190403231446928.png)
+![image-20190403231446928](assets/image-20190403231446928.png)
 
 
 
